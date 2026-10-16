@@ -1,5 +1,5 @@
 import {type Wire, emitCompare, emitSelect} from '../handwired/src/runtime/numeric-ui-core.ts'
-import {createSourceTable, event, input, oneHot, stateBit} from '../handwired/src/runtime/cells.ts'
+import {type WireValues, createEvaluator, createSourceTable, event, input, oneHot, stateBit} from '../handwired/src/runtime/cells.ts'
 
 export const layout = {tabCount: 3, tabWidth: 96, tabHeight: 36} as const
 const coordinate = () => input([-16_384, 16_384], {grid: 1 / 64})
@@ -39,4 +39,38 @@ export function buildTabs() {
   table.next(cells.selected, selected)
   const output = {rowLeft, rowTop, indicatorLeft, selected}
   return {cells, output, ...table.finish()}
+}
+
+export type TabsEvent = {x: number, y: number}
+export type TabsOutput = WireValues<ReturnType<typeof buildTabs>['output']>
+
+export function createTabsMachine() {
+  const built = buildTabs()
+  const {cells} = built
+  const evaluate = createEvaluator(built)
+  const source = new Float32Array(built.initialSource)
+  let queued: TabsEvent[] = []
+  const run = (viewportWidth: number, viewportHeight: number) => {
+    source[cells.viewportWidth] = viewportWidth
+    source[cells.viewportHeight] = viewportHeight
+    const result = evaluate(source)
+    source.set(result.nextValues)
+    return result.output
+  }
+  return {
+    built,
+    queue(event: TabsEvent) {
+      queued.push(event)
+    },
+    step(viewportWidth: number, viewportHeight: number): TabsOutput {
+      for (const {x, y} of queued) {
+        source[cells.down.active] = 1
+        source[cells.down.x] = x
+        source[cells.down.y] = y
+        run(viewportWidth, viewportHeight)
+      }
+      queued = []
+      return run(viewportWidth, viewportHeight)
+    },
+  }
 }
