@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tabs</title>
+  <style>
+    body {margin: 0; height: 100vh; overflow: hidden; background: #f5f5f7; font: 15px system-ui; touch-action: none}
+    .row {position: absolute; left: 0; top: 0; display: flex; background: white; border-radius: 8px}
+    .tab {width: 96px; height: 36px; display: grid; place-items: center; color: #6e6e73; cursor: pointer}
+    .tab[aria-selected="true"] {color: #1d1d1f; font-weight: 600}
+    .indicator {position: absolute; left: 0; bottom: 0; width: 96px; height: 3px; background: #0a84ff}
+  </style>
+</head>
+<body>
+  <div class="row" role="tablist">
+    <div class="tab" role="tab" aria-selected="true">Home</div>
+    <div class="tab" role="tab" aria-selected="false">Search</div>
+    <div class="tab" role="tab" aria-selected="false">Profile</div>
+    <div class="indicator"></div>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

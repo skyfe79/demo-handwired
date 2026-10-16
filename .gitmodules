@@ -1,0 +1,3 @@
+[submodule "handwired"]
+	path = handwired
+	url = https://github.com/chenglou/handwired.git

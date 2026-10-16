@@ -1,0 +1,14 @@
+{
+  "name": "demo-handwired",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun ./tabs/index.html",
+    "test": "bun test ./tabs",
+    "check": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^7.0.2"
+  }
+}
