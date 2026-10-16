@@ -1,4 +1,4 @@
-import {type Wire, emitCompare} from '../handwired/src/runtime/numeric-ui-core.ts'
+import {type Wire, emitCompare, emitSelect} from '../handwired/src/runtime/numeric-ui-core.ts'
 import {createSourceTable, event, input, oneHot, stateBit} from '../handwired/src/runtime/cells.ts'
 
 export const layout = {tabCount: 3, tabWidth: 96, tabHeight: 36} as const
@@ -32,7 +32,11 @@ export function buildTabs() {
 
   const pressed = cells.selected.map((_, index) => all(cells.down.active, insideTab(index, cells.down)))
 
-  table.next(cells.selected, cells.selected)
-  const output = {rowLeft, rowTop, pressed}
+  const pressedAny = circuit.affine(pressed.map(bit => [bit, 1] as const))
+  const selected = cells.selected.map((bit, index) => emitSelect(circuit, pressedAny, bit, pressed[index]!))
+  const indicatorLeft = circuit.affine([[rowLeft, 1], ...selected.map((bit, index) => [bit, index * layout.tabWidth] as const)])
+
+  table.next(cells.selected, selected)
+  const output = {rowLeft, rowTop, indicatorLeft, selected}
   return {cells, output, ...table.finish()}
 }
