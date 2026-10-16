@@ -74,3 +74,28 @@ export function createTabsMachine() {
     },
   }
 }
+
+export function mountTabs() {
+  const machine = createTabsMachine()
+  const row = document.querySelector<HTMLElement>('.row')!
+  const tabs = [...document.querySelectorAll<HTMLElement>('.tab')]
+  const indicator = document.querySelector<HTMLElement>('.indicator')!
+  let scheduledFrame: number | null = null
+  const scheduleRender = () => {
+    scheduledFrame ??= requestAnimationFrame(render)
+  }
+  function render() {
+    scheduledFrame = null
+    const output = machine.step(document.documentElement.clientWidth, document.documentElement.clientHeight)
+    row.style.transform = `translate3d(${output.rowLeft}px,${output.rowTop}px,0)`
+    indicator.style.transform = `translate3d(${output.indicatorLeft - output.rowLeft}px,0,0)`
+    tabs.forEach((tab, index) => tab.setAttribute('aria-selected', output.selected[index] === 1 ? 'true' : 'false'))
+  }
+  const quantize = (coordinate: number) => Math.min(16_384, Math.max(-16_384, Math.round(coordinate * 64) / 64))
+  window.addEventListener('pointerdown', event => {
+    machine.queue({x: quantize(event.clientX), y: quantize(event.clientY)})
+    scheduleRender()
+  })
+  window.addEventListener('resize', scheduleRender)
+  scheduleRender()
+}
