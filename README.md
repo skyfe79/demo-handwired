@@ -1,5 +1,7 @@
 # demo-handwired
 
+<img width="1280" height="720" alt="youtube_thumbnail" src="https://github.com/user-attachments/assets/0152441f-3e00-4b3e-b6a0-1512fad27685" />
+
 [handwired](https://github.com/chenglou/handwired)로 만든 탭 선택기입니다. 탭을 누르는 판단과 밑줄 위치를 가중합과 ReLU만으로 계산합니다.
 
 ```bash
